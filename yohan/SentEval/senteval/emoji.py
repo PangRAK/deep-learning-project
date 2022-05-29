@@ -6,7 +6,7 @@
 #
 
 '''
-SST - binary classification
+emoji - binary classification
 '''
 
 from __future__ import absolute_import, division, unicode_literals
@@ -32,70 +32,70 @@ class EmojiEval(object):
     
         dataset = load_dataset("tweet_eval", "emoji", script_version="master")
         print(dataset)
-        train =  {'X': dataset['train']['text'], 'y': dataset['train']['label']} 
-        dev = {'X': dataset['validation']['text'], 'y': dataset['validation']['label']} 
-        test = {'X': dataset['test']['text'], 'y': dataset['test']['label']} 
-        print('emoji')
-        print('train:', train['X'][0], train['y'][0])
-        print('dev:', dev['X'][0], dev['y'][0])
-        print('test:', test['X'][0], test['y'][0])
+        train =  {'X': [e.split() for e in dataset['train']['text']], 'y': dataset['train']['label']} 
+        dev = {'X': [e.split() for e in dataset['validation']['text']], 'y': dataset['validation']['label']} 
+        test = {'X': [e.split() for e in dataset['test']['text']], 'y': dataset['test']['label']} 
+        # print('emoji')
+        # print('train:', train['X'][0], train['y'][0])
+        # print('dev:', dev['X'][0], dev['y'][0])
+        # print('test:', test['X'][0], test['y'][0])
 
         #train = self.loadFile(os.path.join(task_path, 'sentiment-train'))
         #dev = self.loadFile(os.path.join(task_path, 'sentiment-dev'))
         #test = self.loadFile(os.path.join(task_path, 'sentiment-test'))
-        self.sst_data = {'train': train, 'dev': dev, 'test': test}
+        self.emoji_data = {'train': train, 'dev': dev, 'test': test}
 
     def do_prepare(self, params, prepare):
-        samples = self.sst_data['train']['X'] + self.sst_data['dev']['X'] + \
-                  self.sst_data['test']['X']
+        samples = self.emoji_data['train']['X'] + self.emoji_data['dev']['X'] + \
+                  self.emoji_data['test']['X']
         return prepare(params, samples)
 
     def loadFile(self, fpath):
-        sst_data = {'X': [], 'y': []}
+        emoji_data = {'X': [], 'y': []}
         with io.open(fpath, 'r', encoding='utf-8') as f:
             for line in f:
                 if self.nclasses == 2:
                     sample = line.strip().split('\t')
-                    sst_data['y'].append(int(sample[1]))
-                    sst_data['X'].append(sample[0].split())
+                    emoji_data['y'].append(int(sample[1]))
+                    emoji_data['X'].append(sample[0].split())
                 elif self.nclasses == 5:
                     sample = line.strip().split(' ', 1)
-                    sst_data['y'].append(int(sample[0]))
-                    sst_data['X'].append(sample[1].split())
-        assert max(sst_data['y']) == self.nclasses - 1
-        return sst_data
+                    emoji_data['y'].append(int(sample[0]))
+                    emoji_data['X'].append(sample[1].split())
+        assert max(emoji_data['y']) == self.nclasses - 1
+        return emoji_data
 
     def run(self, params, batcher):
-        sst_embed = {'train': {}, 'dev': {}, 'test': {}}
+        emoji_embed = {'train': {}, 'dev': {}, 'test': {}}
         bsize = params.batch_size
 
-        for key in self.sst_data:
+        for key in self.emoji_data:
             logging.info('Computing embedding for {0}'.format(key))
             # Sort to reduce padding
-            sorted_data = sorted(zip(self.sst_data[key]['X'],
-                                     self.sst_data[key]['y']),
+            sorted_data = sorted(zip(self.emoji_data[key]['X'],
+                                     self.emoji_data[key]['y']),
                                  key=lambda z: (len(z[0]), z[1]))
-            self.sst_data[key]['X'], self.sst_data[key]['y'] = map(list, zip(*sorted_data))
+            self.emoji_data[key]['X'], self.emoji_data[key]['y'] = map(list, zip(*sorted_data))
 
-            sst_embed[key]['X'] = []
-            for ii in range(0, len(self.sst_data[key]['y']), bsize):
-                batch = self.sst_data[key]['X'][ii:ii + bsize]
+            emoji_embed[key]['X'] = []
+            for ii in range(0, len(self.emoji_data[key]['y']), bsize):
+                batch = self.emoji_data[key]['X'][ii:ii + bsize]
                 embeddings = batcher(params, batch)
-                sst_embed[key]['X'].append(embeddings)
-            sst_embed[key]['X'] = np.vstack(sst_embed[key]['X'])
-            sst_embed[key]['y'] = np.array(self.sst_data[key]['y'])
+                emoji_embed[key]['X'].append(embeddings)
+            emoji_embed[key]['X'] = np.vstack(emoji_embed[key]['X'])
+            emoji_embed[key]['y'] = np.array(self.emoji_data[key]['y'])
             logging.info('Computed {0} embeddings'.format(key))
 
         config_classifier = {'nclasses': self.nclasses, 'seed': self.seed,
                              'usepytorch': params.usepytorch,
                              'classifier': params.classifier}
 
-        clf = SplitClassifier(X={'train': sst_embed['train']['X'],
-                                 'valid': sst_embed['dev']['X'],
-                                 'test': sst_embed['test']['X']},
-                              y={'train': sst_embed['train']['y'],
-                                 'valid': sst_embed['dev']['y'],
-                                 'test': sst_embed['test']['y']},
+        clf = SplitClassifier(X={'train': emoji_embed['train']['X'],
+                                 'valid': emoji_embed['dev']['X'],
+                                 'test': emoji_embed['test']['X']},
+                              y={'train': emoji_embed['train']['y'],
+                                 'valid': emoji_embed['dev']['y'],
+                                 'test': emoji_embed['test']['y']},
                               config=config_classifier)
 
         devacc, testacc = clf.run()
@@ -103,5 +103,5 @@ class EmojiEval(object):
             EMOJI {2} classification\n'.format(devacc, testacc, self.task_name))
 
         return {'devacc': devacc, 'acc': testacc,
-                'ndev': len(sst_embed['dev']['X']),
-                'ntest': len(sst_embed['test']['X'])}
+                'ndev': len(emoji_embed['dev']['X']),
+                'ntest': len(emoji_embed['test']['X'])}

@@ -89,6 +89,7 @@ from filelock import FileLock
 logger = logging.get_logger(__name__)
 
 class CLTrainer(Trainer):
+
     def evaluate(
         self,
         eval_dataset: Optional[Dataset] = None,
@@ -123,17 +124,18 @@ class CLTrainer(Trainer):
         se = senteval.engine.SE(params, batcher, prepare)
         tasks = ['STSBenchmark', 'SICKRelatedness']
         if eval_senteval_transfer or self.args.eval_transfer:
-            tasks = ['STSBenchmark', 'EMOJI', 'SICKRelatedness', 'MR', 'CR', 'SUBJ', 'MPQA', 'SST2', 'TREC', 'MRPC']
+            tasks = ['STSBenchmark', 'SICKRelatedness', 'EMOJI', 'MR', 'CR', 'MPQA', 'SST2', 'TREC', 'MRPC']
+
         self.model.eval()
         results = se.eval(tasks)
         
         stsb_spearman = results['STSBenchmark']['dev']['spearman'][0]
-        #sickr_spearman = results['SICKRelatedness']['dev']['spearman'][0]
+        sickr_spearman = results['SICKRelatedness']['dev']['spearman'][0]
 
-        metrics = {"eval_stsb_spearman": stsb_spearman}#, "eval_sickr_spearman": sickr_spearman, "eval_avg_sts": (stsb_spearman + sickr_spearman) / 2} 
+        metrics = {"eval_stsb_spearman": stsb_spearman, "eval_sickr_spearman": sickr_spearman, "eval_avg_sts": (stsb_spearman + sickr_spearman) / 2} 
         if eval_senteval_transfer or self.args.eval_transfer:
             avg_transfer = 0
-            for task in ['EMOJI', 'MR', 'CR', 'SUBJ', 'MPQA', 'SST2', 'TREC', 'MRPC']:
+            for task in ['EMOJI', 'MR', 'CR', 'MPQA', 'SST2', 'TREC', 'MRPC']:
                 avg_transfer += results[task]['devacc']
                 metrics['eval_{}'.format(task)] = results[task]['devacc']
             avg_transfer /= 7

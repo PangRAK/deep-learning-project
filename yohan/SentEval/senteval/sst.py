@@ -32,10 +32,6 @@ class SSTEval(object):
         train = self.loadFile(os.path.join(task_path, 'sentiment-train'))
         dev = self.loadFile(os.path.join(task_path, 'sentiment-dev'))
         test = self.loadFile(os.path.join(task_path, 'sentiment-test'))
-        print('sentiment')
-        print('train:', train['X'][0], train['y'][0])
-        print('dev:', dev['X'][0], dev['y'][0])
-        print('test:', test['X'][0], test['y'][0])
         self.sst_data = {'train': train, 'dev': dev, 'test': test}
 
     def do_prepare(self, params, prepare):
