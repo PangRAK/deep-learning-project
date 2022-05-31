@@ -1,0 +1,87 @@
+"""
+------------------------------------------------------------------------------------------------
+# BerTweet / Sentiment / Random
+python train.py \
+    --model_name_or_path ./vinai/bertweet-base \
+    --train_file /home/rak/git/deep-learning-project/sangrak/tweeteval_sentiment_random.csv \
+    --output_dir result/sentiment-sup-simcse-bertweet-base \
+    --num_train_epochs 3 \
+    --per_device_train_batch_size 128 \
+    --learning_rate 5e-5 \
+    --max_seq_length 32 \
+    --evaluation_strategy steps \
+    --metric_for_best_model stsb_spearman \
+    --load_best_model_at_end \
+    --eval_steps 125 \
+    --pooler_type cls \
+    --overwrite_output_dir \
+    --temp 0.05 \
+    --do_train \
+    --do_eval \
+    --fp16 \
+    "$@"
+------------------------------------------------------------------------------------------------
+# BerTweet / Sentiment / Near
+python train.py \
+    --model_name_or_path ./vinai/bertweet-base \
+    --train_file /home/rak/git/deep-learning-project/sangrak/tweeteval_sentiment_near.csv \
+    --output_dir result/sentiment-sup-simcse-bertweet-base \
+    --num_train_epochs 3 \
+    --per_device_train_batch_size 128 \
+    --learning_rate 5e-5 \
+    --max_seq_length 32 \
+    --evaluation_strategy steps \
+    --metric_for_best_model stsb_spearman \
+    --load_best_model_at_end \
+    --eval_steps 125 \
+    --pooler_type cls \
+    --overwrite_output_dir \
+    --temp 0.05 \
+    --do_train \
+    --do_eval \
+    --fp16 \
+    "$@"
+------------------------------------------------------------------------------------------------
+# BerTweet / Stance / Random
+python train.py \
+    --model_name_or_path ./vinai/bertweet-base \
+    --train_file /home/rak/git/deep-learning-project/sangrak/tweeteval_stance_random.csv \
+    --output_dir result/sentiment-sup-simcse-bertweet-base \
+    --num_train_epochs 3 \
+    --per_device_train_batch_size 128 \
+    --learning_rate 5e-5 \
+    --max_seq_length 32 \
+    --evaluation_strategy steps \
+    --metric_for_best_model stsb_spearman \
+    --load_best_model_at_end \
+    --eval_steps 125 \
+    --pooler_type cls \
+    --overwrite_output_dir \
+    --temp 0.05 \
+    --do_train \
+    --do_eval \
+    --fp16 \
+    "$@"
+------------------------------------------------------------------------------------------------
+# BerTweet / Stance / Near
+python train.py \
+    --model_name_or_path ./vinai/bertweet-base \
+    --train_file /home/rak/git/deep-learning-project/sangrak/tweeteval_stance_near.csv \
+    --output_dir result/sentiment-sup-simcse-bertweet-base \
+    --num_train_epochs 3 \
+    --per_device_train_batch_size 128 \
+    --learning_rate 5e-5 \
+    --max_seq_length 32 \
+    --evaluation_strategy steps \
+    --metric_for_best_model stsb_spearman \
+    --load_best_model_at_end \
+    --eval_steps 125 \
+    --pooler_type cls \
+    --overwrite_output_dir \
+    --temp 0.05 \
+    --do_train \
+    --do_eval \
+    --fp16 \
+    "$@"
+------------------------------------------------------------------------------------------------
+"""
