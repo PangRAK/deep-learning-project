@@ -22,6 +22,7 @@ from senteval.tools.validation import SplitClassifier
 
 class EmojiEval(object):
     def __init__(self, task_path, nclasses=20, seed=1111):
+        logging.info('***** Transfer task : Emoji %s classification *****\n\n')
         self.seed = seed
 
         # binary of fine-grained
@@ -30,7 +31,7 @@ class EmojiEval(object):
         self.task_name = 'Binary' if self.nclasses == 2 else 'Fine-Grained'
         logging.debug('***** Transfer task : Emoji %s classification *****\n\n', self.task_name)
     
-        dataset = load_dataset("tweet_eval", "emoji", script_version="master")
+        dataset = load_dataset("tweet_eval", "emoji")
         print(dataset)
         train =  {'X': [e.split() for e in dataset['train']['text']], 'y': dataset['train']['label']} 
         dev = {'X': [e.split() for e in dataset['validation']['text']], 'y': dataset['validation']['label']} 
