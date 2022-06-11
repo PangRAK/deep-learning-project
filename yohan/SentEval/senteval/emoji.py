@@ -19,6 +19,12 @@ from datasets import load_dataset
 
 from senteval.tools.validation import SplitClassifier
 
+def preprocess(dataset):
+    t = dataset['text']
+    t = '@user' if t.startswith('@') and len(t) > 1 else t
+    t = 'http' if t.startswith('http') else t
+    dataset['text'] = t
+    return dataset
 
 class EmojiEval(object):
     def __init__(self, task_path, nclasses=20, seed=1111):
@@ -32,6 +38,7 @@ class EmojiEval(object):
         logging.debug('***** Transfer task : Emoji %s classification *****\n\n', self.task_name)
     
         dataset = load_dataset("tweet_eval", "emoji")
+        dataset = dataset.map(preprocess)
         print(dataset)
         train =  {'X': [e.split() for e in dataset['train']['text']], 'y': dataset['train']['label']} 
         dev = {'X': [e.split() for e in dataset['validation']['text']], 'y': dataset['validation']['label']} 

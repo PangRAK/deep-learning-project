@@ -247,6 +247,13 @@ class OurTrainingArguments(TrainingArguments):
         return device
 
 
+def tweet_preprocess(dataset):
+    t = dataset['text']
+    t = '@user' if t.startswith('@') and len(t) > 1 else t
+    t = 'http' if t.startswith('http') else t
+    dataset['text'] = t
+    return dataset
+
 def main():
     # See all possible arguments in src/transformers/training_args.py
     # or by passing the --help flag to this script.
@@ -449,6 +456,7 @@ def main():
         return features
 
     if training_args.do_train:
+        datasets["train"].map(tweet_preprocess)
         train_dataset = datasets["train"].map(
             prepare_features,
             batched=True,
