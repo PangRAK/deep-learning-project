@@ -12,10 +12,13 @@ def preprocess(dataset):
 
 dataset = load_dataset("tweet_eval", "emoji",script_version="master")
 dataset = dataset.map(preprocess)
-file = "roberta-base"
+file = "/home/dilab/Desktop/deep-learning-project/yohan/result/my-unsup-bert-base-uncased"
 model = AutoModelForSequenceClassification.from_pretrained(file, num_labels=20)
 tokenizer = AutoTokenizer.from_pretrained(file)
 model.resize_token_embeddings(len(tokenizer)) 
+# for param in model.roberta.parameters():
+#     param.requires_grad=False
+
 # pip install sentencepiece
 def preprocess_function(examples):
     return tokenizer(examples["text"], truncation=True)
@@ -24,11 +27,11 @@ tokenized_emoji = dataset.map(preprocess_function, batched=True)
 data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
 training_args = TrainingArguments(
-    output_dir="./result_emoji",
+    output_dir="./result_emoji/bert-base-uncased-unsup-finetune",
     learning_rate=3e-5,
     evaluation_strategy = "epoch",
-    per_device_train_batch_size=64,
-    per_device_eval_batch_size=64,
+    per_device_train_batch_size=128,
+    per_device_eval_batch_size=128,
     num_train_epochs=10,
     weight_decay=0.01,
 )
