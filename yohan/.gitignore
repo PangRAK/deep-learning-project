@@ -28,6 +28,9 @@ share/python-wheels/
 *.egg
 MANIFEST
 runs/
+bert-base-uncased/
+vinai/
+*.out
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

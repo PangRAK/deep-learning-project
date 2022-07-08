@@ -9,7 +9,7 @@ import collections
 import random
 import os
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
 
 from datasets import load_dataset
@@ -198,7 +198,10 @@ class OurTrainingArguments(TrainingArguments):
         default=False,
         metadata={"help": "Evaluate transfer task dev sets (in validation)."}
     )
-
+    train_contrastive_loss: float = field(
+        default=0.0,
+        metadata={"help": "Using train contrastive loss when save checkpoint"}
+    )
     @cached_property
     @torch_required
     def _setup_devices(self) -> "torch.device":
@@ -261,8 +264,8 @@ def main():
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
     if (
-        os.path.exists(training_args.output_dir)
-        and os.listdir(training_args.output_dir)
+        os.path.exists(f"{training_args.output_dir}")
+        and os.listdir(f"{training_args.output_dir}")
         and training_args.do_train
         and not training_args.overwrite_output_dir
     ):
@@ -270,6 +273,8 @@ def main():
             f"Output directory ({training_args.output_dir}) already exists and is not empty."
             "Use --overwrite_output_dir to overcome."
         )
+
+
 
     # Setup logging
     logging.basicConfig(
@@ -353,7 +358,7 @@ def main():
         )
 
     if model_args.model_name_or_path:
-        if 'bertweet' in model_args.model_name_or_path:
+        if 'bertweet' or 'roberta' in model_args.model_name_or_path:
             model = RobertaForCL.from_pretrained(
                 model_args.model_name_or_path,
                 from_tf=bool(".ckpt" in model_args.model_name_or_path),
@@ -556,7 +561,7 @@ def main():
         train_result = trainer.train(model_path=model_path)
         trainer.save_model()  # Saves the tokenizer too for easy upload
 
-        output_train_file = os.path.join(training_args.output_dir, "train_results.txt")
+        output_train_file = os.path.join(f"{training_args.output_dir}", "train_results.txt")
         if trainer.is_world_process_zero():
             with open(output_train_file, "w") as writer:
                 logger.info("***** Train results *****")
@@ -565,7 +570,7 @@ def main():
                     writer.write(f"{key} = {value}\n")
 
             # Need to save the state, since Trainer.save_model saves only the tokenizer with the model
-            trainer.state.save_to_json(os.path.join(training_args.output_dir, "trainer_state.json"))
+            trainer.state.save_to_json(os.path.join(f"{training_args.output_dir}", "trainer_state.json"))
 
     # Evaluation
     results = {}
@@ -573,7 +578,7 @@ def main():
         logger.info("*** Evaluate ***")
         results = trainer.evaluate(eval_senteval_transfer=True)
 
-        output_eval_file = os.path.join(training_args.output_dir, "eval_results.txt")
+        output_eval_file = os.path.join(f"{training_args.output_dir}", "eval_results.txt")
         if trainer.is_world_process_zero():
             with open(output_eval_file, "w") as writer:
                 logger.info("***** Eval results *****")

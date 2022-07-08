@@ -30,8 +30,8 @@ class EmojiEval(object):
         self.task_name = 'Binary' if self.nclasses == 2 else 'Fine-Grained'
         logging.debug('***** Transfer task : Emoji %s classification *****\n\n', self.task_name)
     
-        dataset = load_dataset("tweet_eval", "emoji", script_version="master")
-        print(dataset)
+        dataset = load_dataset("tweet_eval", "emoji")
+        #print(dataset)
         train =  {'X': [e.split() for e in dataset['train']['text']], 'y': dataset['train']['label']} 
         dev = {'X': [e.split() for e in dataset['validation']['text']], 'y': dataset['validation']['label']} 
         test = {'X': [e.split() for e in dataset['test']['text']], 'y': dataset['test']['label']} 
@@ -99,6 +99,9 @@ class EmojiEval(object):
                               config=config_classifier)
 
         devacc, testacc = clf.run()
+        # print('\nDev acc : {0} Test acc : {1} for \
+        #     EMOJI {2} classification\n'.format(devacc, testacc, self.task_name))
+
         logging.debug('\nDev acc : {0} Test acc : {1} for \
             EMOJI {2} classification\n'.format(devacc, testacc, self.task_name))
 
