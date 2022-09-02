@@ -6,7 +6,6 @@ import os
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
-
 def preprocess(dataset):
     t = dataset['text']
     t = '@user' if t.startswith('@') and len(t) > 1 else t
@@ -51,6 +50,7 @@ training_args = TrainingArguments(
 metric = load_metric("f1")
 label_list = ['❤', '😍', '😂', '💕', '🔥', '😊', '😎', '✨', '💙', '😘', '📷', '🇺🇸', '☀', '💜', '😉', '💯', '😁', '🎄', '📸', '😜']
 
+
 def compute_metrics(p):
     predictions, labels = p
     predictions = np.argmax(predictions, axis=-1)
@@ -68,5 +68,4 @@ trainer = Trainer(
 )
 
 trainer.train()
-
 trainer.evaluate()

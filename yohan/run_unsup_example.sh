@@ -3,11 +3,14 @@
 # In this example, we show how to train SimCSE on unsupervised Wikipedia data.
 # If you want to train it with multiple GPU cards, see "run_sup_example.sh"
 # about how to use PyTorch's distributed data parallel.
+# cardiffnlp/twitter-roberta-base-mar2022
+# bert-base-uncased
+# roberta-base
 
 python train.py \
-    --model_name_or_path ./bert-base-uncased \
-    --train_file data/emoji120k_corpus.txt \
-    --output_dir result/my-unsup-simcse-bert-base-uncased \
+    --model_name_or_path bert-base-uncased \
+    --train_file /home/uj-user/deep-learning-project/yohan/data/emoji_corpus_preprocess.txt \
+    --output_dir result/roberta-base2 \
     --num_train_epochs 10 \
     --per_device_train_batch_size 64 \
     --learning_rate 3e-5 \

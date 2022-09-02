@@ -9,7 +9,7 @@ import collections
 import random
 import os
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
 
 from datasets import load_dataset
@@ -360,7 +360,7 @@ def main():
         )
 
     if model_args.model_name_or_path:
-        if 'bertweet' in model_args.model_name_or_path:
+        if 'roberta' in model_args.model_name_or_path:
             model = RobertaForCL.from_pretrained(
                 model_args.model_name_or_path,
                 from_tf=bool(".ckpt" in model_args.model_name_or_path),

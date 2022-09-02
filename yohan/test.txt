@@ -1,0 +1,17 @@
+tokenizer_kwargs: {'cache_dir': None, 'use_fast': False, 'revision': 'main', 'use_auth_token': None}
+bert-base-uncased
+Yes I am Bert.
+DatasetDict({
+    train: Dataset({
+        features: ['text', 'label'],
+        num_rows: 45000
+    })
+    test: Dataset({
+        features: ['text', 'label'],
+        num_rows: 50000
+    })
+    validation: Dataset({
+        features: ['text', 'label'],
+        num_rows: 5000
+    })
+})
